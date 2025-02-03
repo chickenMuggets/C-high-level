@@ -113,7 +113,7 @@ int main() {
     std::chrono::duration<double> duration = end - start;
 
     std::cout << "Generated " << outputFile << " in "
-              << std::fixed << std::setprecision(2) << duration.count() << " seconds.\n";
+              << std::fixed << std::setprecision(70) << duration.count() << " seconds.\n";
 
     return 0;
 }

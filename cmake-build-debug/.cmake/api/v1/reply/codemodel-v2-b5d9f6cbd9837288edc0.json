@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/055572/CLionProjects/chllang/cmake-build-debug",
-		"source" : "C:/Users/055572/CLionProjects/chllang"
+		"build" : "C:/Users/055572/CLionProjects/chl/cmake-build-debug",
+		"source" : "C:/Users/055572/CLionProjects/chl"
 	},
 	"version" : 
 	{
