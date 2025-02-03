@@ -4,13 +4,20 @@
 #include <sstream>
 #include <chrono>
 #include <iomanip>  // For setprecision
+#include <bits/fs_fwd.h>
 
-int main() {
+int main(int argc, char* argv[]) {
+    int i;
+    for (i = 0; i < argc; i++) {
+        printf("argv[%d] = %s\n", i, argv[i]);
+    }
+    std::string filePath = argv[1];
     auto start = std::chrono::high_resolution_clock::now();
+    std::string inputFile = argv[1];
     std::string outputFile = "main.cpp";
-    std::string inputFile = "input.chllang";
     std::cout << "Opening file" << "\n";
     std::ifstream file(inputFile);
+    std::cout << "File provided: " << filePath << std::endl;
 
     if (!file.is_open()) {
         std::cerr << "Error opening " << inputFile << ".\n";
