@@ -1,0 +1,3 @@
+C:/Users/055572/CLionProjects/chllang/cmake-build-debug/CMakeFiles/chllang.dir
+C:/Users/055572/CLionProjects/chllang/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/055572/CLionProjects/chllang/cmake-build-debug/CMakeFiles/rebuild_cache.dir
