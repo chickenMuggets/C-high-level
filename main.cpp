@@ -1,41 +1,105 @@
 #include <iostream>
 #include <fstream>
-#include <cstdlib>
 #include <string>
-#include <regex>
+#include <sstream>
+#include <chrono>
+#include <iomanip>  // For setprecision
 
-//compiler
-void compile(const std::string& source_code) {
-    //
-    std::regex print_regex(R"(^\s*print\((?:\"(.*)\"|(\d+))\)\s*$)");
-    std::regex function_regex(R"(^\s*function\(\) \{(.*)\}\s*$)");
-    std::smatch match;
-    std::ofstream out("output.cpp");
-    out << "#include <iostream>\n";
-    out << "int main() {\n";
+int main() {
+    auto start = std::chrono::high_resolution_clock::now();
 
-    if (std::regex_match(source_code, match, function_regex)) {
-        std::string body = match[1].str();
-        if (std::regex_match(body, match, print_regex)) {
-            out << "    std::cout << \"" << match[1].str() << "\\n\";\n";
+    std::string outputFile = "main.cpp";
+    std::string inputFile = "input.chllang";
+    std::ifstream file(inputFile);
+
+    if (!file.is_open()) {
+        std::cerr << "Error opening " << inputFile << ".\n";
+        return 1;
+    }
+
+    std::ostringstream buffer;
+    buffer << "#include <iostream>\n\nint main() {\n";
+
+    std::string line;
+    size_t printPos;
+    size_t intvarPos;
+    size_t commentPos;
+    size_t floatvarPos;
+    bool found = false;
+    int lineNumber = 0;
+    while (std::getline(file, line)) {
+        lineNumber++;
+        printPos = line.find("print(\"");
+        intvarPos = line.find("int ");
+        floatvarPos = line.find("float ");
+        commentPos = line.find("//");
+
+        if (printPos != std::string::npos) {
+            size_t start = printPos + 7;  // Move past `print("`
+            size_t end = line.find("\")", start);
+            if (end != std::string::npos) {
+                std::string extractedText = line.substr(start, end - start);
+                buffer << "    std::cout << \"" << extractedText << "\\n\";\n";
+                found = true;
+            }
+        }
+        else if (commentPos != std::string::npos) {
+            std::cout << line;
+            buffer << "    " << line << "\n";
+        }
+        else if (intvarPos != std::string::npos) {
+            // Extract variable name from the line (after 'int ')
+            size_t varStart = intvarPos + 4;  // Skip past 'int '
+            size_t varEnd = line.find(" ", varStart);
+            if (varEnd == std::string::npos) {
+                varEnd = line.length();  // If no space, the variable name goes until the end of the line
+            }
+            std::string variableName = line.substr(varStart, varEnd - varStart);
+            buffer << "    int " << variableName << ";\n";
+        }
+        else if (floatvarPos != std::string::npos) {
+            //Extract variable name from the line (after 'float')
+            size_t varStart = floatvarPos + 6;  // Skip past 'float '
+            size_t varEnd = line.find(" ", varStart);
+            if (varEnd == std::string::npos) {
+                varEnd = line.length();  // If no space, the variable name goes until the end of the line
+            }
+            std::string variableName = line.substr(varStart, varEnd - varStart);
+            if (line.find("=") != std::string::npos) {
+
+                buffer << "    float " << variableName << ";\n";
+            }
+            else {
+                buffer << "    float " << variableName << " = " << varEnd << ";\n";
+            }
+
+        }
+        else {
+            std::cerr << "Syntax error: No matching construct found on line " << lineNumber << ".\n";
+            return 1;
         }
     }
 
-    out << "    return 0;\n";
-    out << "}\n";
-    out.close();
+    buffer << "    return 0;\n}\n";
+    file.close();
 
-    if (system("g++ output.cpp -o output.exe") != 0) {
-        std::cerr << "Compilation failed." << std::endl;
-        return;
+    std::ofstream outFile(outputFile, std::ios::trunc);
+    if (!outFile.is_open()) {
+        std::cerr << "Error creating " << outputFile << ".\n";
+        return 1;
     }
-    std::cout << "Compilation finished. Run ./output.exe to execute." << std::endl;
-}
 
-int main() {
-    std::string code;
-    std::cout << "Enter your code: ";
-    std::getline(std::cin, code);
-    compile(code);
+    outFile << buffer.str();
+    outFile.close();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    if (found)
+        std::cout << "Generated " << outputFile << " in "
+                  << std::fixed << std::setprecision(2) << duration.count() << " seconds.\n";
+    else
+        std::cout << "No valid print statements found.\n";
+
     return 0;
 }
