@@ -7,15 +7,19 @@
 
 int main() {
     auto start = std::chrono::high_resolution_clock::now();
-
     std::string outputFile = "main.cpp";
     std::string inputFile = "input.chllang";
+    std::cout << "Opening file" << "\n";
     std::ifstream file(inputFile);
 
     if (!file.is_open()) {
         std::cerr << "Error opening " << inputFile << ".\n";
         return 1;
     }
+    else {
+        std::cout << "Opened file" << "\n";
+    }
+
 
     std::ostringstream buffer;
     buffer << "#include <iostream>\n\nint main() {\n";
@@ -25,8 +29,8 @@ int main() {
     size_t intvarPos;
     size_t commentPos;
     size_t floatvarPos;
-    bool found = false;
     int lineNumber = 0;
+    std::cout << "Begginning compilation" << "\n";
     while (std::getline(file, line)) {
         lineNumber++;
         printPos = line.find("print(\"");
@@ -40,40 +44,53 @@ int main() {
             if (end != std::string::npos) {
                 std::string extractedText = line.substr(start, end - start);
                 buffer << "    std::cout << \"" << extractedText << "\\n\";\n";
-                found = true;
             }
         }
+
+
         else if (commentPos != std::string::npos) {
-            std::cout << line;
             buffer << "    " << line << "\n";
         }
+
+
         else if (intvarPos != std::string::npos) {
-            // Extract variable name from the line (after 'int ')
+            //Extract variable name from the line (after 'int')
             size_t varStart = intvarPos + 4;  // Skip past 'int '
-            size_t varEnd = line.find(" ", varStart);
+            size_t varEnd = line.find(" ");
+            std::cout << line.find(" ") << "\n";
             if (varEnd == std::string::npos) {
                 varEnd = line.length();  // If no space, the variable name goes until the end of the line
             }
-            std::string variableName = line.substr(varStart, varEnd - varStart);
-            buffer << "    int " << variableName << ";\n";
+            std::string varibleContents = line.substr(varStart, varEnd - varStart);
+            if (line.find("=") == std::string::npos) {
+
+                buffer << "    int " << varibleContents << ";\n";
+            }
+            else {
+                buffer << "    float " << varibleContents << ";\n";
+
+            }
         }
+
+
         else if (floatvarPos != std::string::npos) {
             //Extract variable name from the line (after 'float')
             size_t varStart = floatvarPos + 6;  // Skip past 'float '
-            size_t varEnd = line.find(" ", varStart);
+            size_t varEnd = line.find(" ");
             if (varEnd == std::string::npos) {
                 varEnd = line.length();  // If no space, the variable name goes until the end of the line
             }
-            std::string variableName = line.substr(varStart, varEnd - varStart);
-            if (line.find("=") != std::string::npos) {
+            std::string varibleContents = line.substr(varStart, varEnd - varStart);
+            if (line.find("=") == std::string::npos) {
 
-                buffer << "    float " << variableName << ";\n";
+                buffer << "    float " << varibleContents << ";\n";
             }
             else {
-                buffer << "    float " << variableName << " = " << varEnd << ";\n";
+                buffer << "    float " << varibleContents << ";\n";
             }
-
         }
+
+
         else {
             std::cerr << "Syntax error: No matching construct found on line " << lineNumber << ".\n";
             return 1;
@@ -88,18 +105,15 @@ int main() {
         std::cerr << "Error creating " << outputFile << ".\n";
         return 1;
     }
-
+    //difference
     outFile << buffer.str();
     outFile.close();
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
-    if (found)
-        std::cout << "Generated " << outputFile << " in "
-                  << std::fixed << std::setprecision(2) << duration.count() << " seconds.\n";
-    else
-        std::cout << "No valid print statements found.\n";
+    std::cout << "Generated " << outputFile << " in "
+              << std::fixed << std::setprecision(2) << duration.count() << " seconds.\n";
 
     return 0;
 }
