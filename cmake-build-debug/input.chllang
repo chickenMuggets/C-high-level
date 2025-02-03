@@ -1,0 +1,6 @@
+print("this is a test of integer and comment interpretation")
+int testing
+int testing2 = 20
+float thevarible = 12
+float thevarible2
+// this is a comment
