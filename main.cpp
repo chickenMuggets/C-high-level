@@ -1,143 +1,23 @@
 #include <iostream>
+#include <bits/stdc++.h>
 #include <fstream>
-#include <string>
-#include <sstream>
 #include <chrono>
-#include <iomanip>  // For setprecision
-#include <bits/fs_fwd.h>
-
-int main(int argc, char* argv[]) {
-    int i;
-    for (i = 0; i < argc; i++) {
-        printf("argv[%d] = %s\n", i, argv[i]);
-    }
-    std::string filePath = argv[1];
-    auto start = std::chrono::high_resolution_clock::now();
-    std::string inputFile = argv[1];
-    std::string outputFile = "main.cpp";
-    std::cout << "Opening file" << "\n";
-    std::ifstream file(inputFile);
-    std::cout << "File provided: " << filePath << std::endl;
-
-    if (!file.is_open()) {
-        std::cerr << "Error opening " << inputFile << ".\n";
-        return 1;
-    }
-    else {
-        std::cout << "Opened file" << "\n";
-    }
+std::vector<char> tokenize(const std::string& sentence) {
+   return std::vector<char>(sentence.c_str(), sentence.c_str() + sentence.length() + 1);
+}
 
 
-    std::ostringstream buffer;
-    buffer << "#include <iostream>\n\nint main() {\n";
+int main() {
+   std::chrono::time_point<std::chrono::system_clock> start, end;
+   std::string line;
 
-    std::string line;
-    size_t printPos;
-    size_t intPos;
-    size_t commentPos;
-    size_t stringPos;
-    size_t floatPos;
-    int lineNumber = 0;
-    std::cout << "Beginning compilation" << "\n";
-    while (std::getline(file, line)) {
-        lineNumber++;
-        printPos = line.find("print(\"");
-        intPos = line.find("int ");
-        floatPos = line.find("float ");
-        commentPos = line.find("//");
-        stringPos = line.find("string ");
+   // Find the comma in the vector
+   //auto it = std::find(arr.begin(), arr.end(), ',');
+   std::fstream output("main.cpp");
+   while (getline(output, line)) {
+      std::cout << line << std::endl;
+   }
+   output.close();
 
-        if (printPos != std::string::npos) {
-            size_t start = printPos + 7;  // Move past `print("`
-            size_t end = line.find("\")", start);
-            if (end != std::string::npos) {
-                std::string extractedText = line.substr(start, end - start);
-                buffer << "    std::cout << \"" << extractedText << "\\n\";\n";
-            }
-        }
-
-
-        else if (commentPos != std::string::npos) {
-            buffer << "    " << line << "\n";
-        }
-        else if (stringPos != std::string::npos) {
-            //Extract variable name from the line (after 'int')
-            size_t varStart = stringPos + 4;  // Skip past 'int '
-            size_t varEnd = line.find(" ");
-            std::cout << line.find(" ") << "\n";
-            if (varEnd == std::string::npos) {
-                varEnd = line.length();  // If no space, the variable name goes until the end of the line
-            }
-            std::string varibleContents = line.substr(varStart, varEnd - varStart);
-            if (line.find("=") == std::string::npos) {
-
-                buffer << "    int " << varibleContents << ";\n";
-            }
-            else {
-                buffer << "    float " << varibleContents << ";\n";
-
-            }
-        }
-
-        else if (intPos != std::string::npos) {
-            //Extract variable name from the line (after 'int')
-            size_t varStart = intPos + 4;  // Skip past 'int '
-            size_t varEnd = line.find(" ");
-            std::cout << line.find(" ") << "\n";
-            if (varEnd == std::string::npos) {
-                varEnd = line.length();  // If no space, the variable name goes until the end of the line
-            }
-            std::string varibleContents = line.substr(varStart, varEnd - varStart);
-            if (line.find("=") == std::string::npos) {
-
-                buffer << "    int " << varibleContents << ";\n";
-            }
-            else {
-                buffer << "    float " << varibleContents << ";\n";
-
-            }
-        }
-        else if (floatPos != std::string::npos) {
-            //Extract variable name from the line (after 'float')
-            size_t varStart = floatPos + 6;  // Skip past 'float '
-            size_t varEnd = line.find(" ");
-            if (varEnd == std::string::npos) {
-                varEnd = line.length();  // If no space, the variable name goes until the end of the line
-            }
-            std::string varibleContents = line.substr(varStart, varEnd - varStart);
-            if (line.find("=") == std::string::npos) {
-
-                buffer << "    float " << varibleContents << ";\n";
-            }
-            else {
-                buffer << "    float " << varibleContents << ";\n";
-            }
-        }
-
-
-        else {
-            std::cerr << "Syntax error: No matching construct found on line " << lineNumber << ".\n";
-            return 1;
-        }
-    }
-
-    buffer << "    return 0;\n}\n";
-    file.close();
-
-    std::ofstream outFile(outputFile, std::ios::trunc);
-    if (!outFile.is_open()) {
-        std::cerr << "Error creating " << outputFile << ".\n";
-        return 1;
-    }
-    //difference
-    outFile << buffer.str();
-    outFile.close();
-
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = end - start;
-
-    std::cout << "Generated " << outputFile << " in "
-              << std::fixed << std::setprecision(70) << duration.count() << " seconds.\n";
-
-    return 0;
+   return 0;
 }

@@ -1,2 +1,4 @@
 print("hello")
 int number = 100
+string shutupharry = "hello"
+string hello
