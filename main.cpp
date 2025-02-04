@@ -33,17 +33,19 @@ int main(int argc, char* argv[]) {
 
     std::string line;
     size_t printPos;
-    size_t intvarPos;
+    size_t intPos;
     size_t commentPos;
-    size_t floatvarPos;
+    size_t stringPos;
+    size_t floatPos;
     int lineNumber = 0;
-    std::cout << "Begginning compilation" << "\n";
+    std::cout << "Beginning compilation" << "\n";
     while (std::getline(file, line)) {
         lineNumber++;
         printPos = line.find("print(\"");
-        intvarPos = line.find("int ");
-        floatvarPos = line.find("float ");
+        intPos = line.find("int ");
+        floatPos = line.find("float ");
         commentPos = line.find("//");
+        stringPos = line.find("string ");
 
         if (printPos != std::string::npos) {
             size_t start = printPos + 7;  // Move past `print("`
@@ -58,11 +60,9 @@ int main(int argc, char* argv[]) {
         else if (commentPos != std::string::npos) {
             buffer << "    " << line << "\n";
         }
-
-
-        else if (intvarPos != std::string::npos) {
+        else if (stringPos != std::string::npos) {
             //Extract variable name from the line (after 'int')
-            size_t varStart = intvarPos + 4;  // Skip past 'int '
+            size_t varStart = stringPos + 4;  // Skip past 'int '
             size_t varEnd = line.find(" ");
             std::cout << line.find(" ") << "\n";
             if (varEnd == std::string::npos) {
@@ -79,10 +79,27 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        else if (intPos != std::string::npos) {
+            //Extract variable name from the line (after 'int')
+            size_t varStart = intPos + 4;  // Skip past 'int '
+            size_t varEnd = line.find(" ");
+            std::cout << line.find(" ") << "\n";
+            if (varEnd == std::string::npos) {
+                varEnd = line.length();  // If no space, the variable name goes until the end of the line
+            }
+            std::string varibleContents = line.substr(varStart, varEnd - varStart);
+            if (line.find("=") == std::string::npos) {
 
-        else if (floatvarPos != std::string::npos) {
+                buffer << "    int " << varibleContents << ";\n";
+            }
+            else {
+                buffer << "    float " << varibleContents << ";\n";
+
+            }
+        }
+        else if (floatPos != std::string::npos) {
             //Extract variable name from the line (after 'float')
-            size_t varStart = floatvarPos + 6;  // Skip past 'float '
+            size_t varStart = floatPos + 6;  // Skip past 'float '
             size_t varEnd = line.find(" ");
             if (varEnd == std::string::npos) {
                 varEnd = line.length();  // If no space, the variable name goes until the end of the line

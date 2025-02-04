@@ -21,6 +21,11 @@
 		{
 			"isCMake" : true,
 			"isExternal" : true,
+			"path" : "C:/Users/055572/AppData/Local/JetBrains/CLion 2024.3.2/bin/cmake/win/x64/share/cmake-3.30/Modules/CMakeMinGWFindMake.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
 			"path" : "C:/Users/055572/AppData/Local/JetBrains/CLion 2024.3.2/bin/cmake/win/x64/share/cmake-3.30/Modules/CMakeSystemSpecificInitialize.cmake"
 		},
 		{
@@ -817,8 +822,8 @@
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "C:/Users/055572/CLionProjects/chl/cmake-build-debug",
-		"source" : "C:/Users/055572/CLionProjects/chl"
+		"build" : "C:/Users/055572/CLionProjects/chl/C-high-level/cmake-build-debug",
+		"source" : "C:/Users/055572/CLionProjects/chl/C-high-level"
 	},
 	"version" : 
 	{
